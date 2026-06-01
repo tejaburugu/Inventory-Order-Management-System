@@ -63,8 +63,6 @@ While the backend is building, configure environment variables:
 ```
 DATABASE_URL=postgresql://inventory_user:YOUR_PASSWORD@YOUR_INTERNAL_HOST:5432/inventory_db
 SECRET_KEY=your-random-32-character-secret-key-here
-FASTAPI_HOST=0.0.0.0
-FASTAPI_PORT=3000
 ```
 
 **To get DATABASE_URL**:
@@ -79,15 +77,11 @@ postgresql://inventory_user:abc123def456@dpg-abc123def456.oregon-postgres.render
 
 ### 2.3 Configure Build & Deploy Settings
 
+Render will use the root `Dockerfile` in your repository to build the backend service automatically.
+
 1. In the **inventory-backend** service, go to **Settings** tab
-2. Under **Build Command**, enter:
-   ```
-   pip install -r backend/requirements.txt
-   ```
-3. Under **Start Command**, enter:
-   ```
-   uvicorn backend.app.main:app --host 0.0.0.0 --port 3000
-   ```
+2. You do not need to enter a custom build command or start command if the service is configured to use Docker mode
+3. Confirm the **Dockerfile path** is set to `/Dockerfile` (the root of the repository)
 4. Click **Save Changes**
 
 The backend will redeploy automatically.
