@@ -19,6 +19,13 @@ This monorepo implements a complete order management platform with:
 - Docker and Docker Compose (v3.8+)
 - Git
 
+### Deployment Options
+
+Looking to deploy? See [DEPLOYMENT.md](DEPLOYMENT.md) for:
+- ✅ **Free Render.com deployment** (recommended)
+- Docker-based VPS deployment
+- AWS, Azure, and other cloud options
+
 ### Setup Instructions
 
 #### 1. Environment Configuration
