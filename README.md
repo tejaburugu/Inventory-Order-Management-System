@@ -123,80 +123,83 @@ The frontend application will be available at `http://localhost:5173`.
 ## Project Architecture
 
 ```
-Inventory & Order Management System/
-├── backend/                          # Python FastAPI backend service
-│   ├── app/
-│   │   ├── main.py                   # FastAPI application entry point with CORS middleware
-│   │   ├── database.py               # Database connection and session management
-│   │   ├── models.py                 # SQLAlchemy ORM models (Product, Customer, Order, OrderItem)
-│   │   ├── schemas.py                # Pydantic request/response models with validation
-│   │   ├── crud.py                   # Database operations with transaction support
-│   │   ├── deps.py                   # Dependency injection utilities
-│   │   └── routers/                  # API route modules
-│   │       ├── products.py           # Product management endpoints
-│   │       ├── customers.py          # Customer management endpoints
-│   │       └── orders.py             # Order processing with stock management
-│   ├── alembic/                      # Database migration framework
-│   │   ├── env.py                    # Alembic configuration
-│   │   └── versions/                 # Migration scripts
-│   │       └── 0001_initial.py       # Initial schema creation
-│   ├── Dockerfile                    # Multi-stage Docker image (Python 3.11-slim)
-│   ├── requirements.txt               # Python dependencies and versions
-│   └── .dockerignore                 # Docker build exclusions
+📦 Inventory & Order Management System/
 │
-├── frontend/                         # React + Vite web application
-│   ├── src/
-│   │   ├── main.jsx                  # React application entry point
-│   │   ├── App.jsx                   # Root component with routing configuration
-│   │   ├── index.css                 # Global styles
-│   │   ├── api/
-│   │   │   └── axios.js              # Axios HTTP client with baseURL configuration
-│   │   ├── components/               # Reusable React components
-│   │   │   ├── Navbar.jsx            # Navigation bar with route links
-│   │   │   ├── Modal.jsx             # Modal dialog component
-│   │   │   ├── Toast.jsx             # Toast notification system
-│   │   │   ├── ConfirmDialog.jsx     # Confirmation dialog for destructive actions
-│   │   │   ├── ProductForm.jsx       # Product creation/edit form
-│   │   │   ├── CustomerForm.jsx      # Customer creation/edit form
-│   │   │   ├── OrderForm.jsx         # Order creation with item selection
-│   │   │   └── CSS files             # Component-scoped styling
-│   │   ├── pages/                    # Page-level components
-│   │   │   ├── Dashboard.jsx         # Summary dashboard with key metrics
-│   │   │   ├── Products.jsx          # Product management interface
-│   │   │   ├── Customers.jsx         # Customer management interface
-│   │   │   ├── Orders.jsx            # Order management interface
-│   │   │   └── CSS files             # Page-scoped styling
-│   │   └── hooks/
-│   │       └── useFetch.js           # Custom hook for API data fetching
-│   ├── Dockerfile                    # Multi-stage Docker build (Node 18 → Nginx Alpine)
-│   ├── nginx.conf                    # Nginx configuration with SPA routing fallback
-│   ├── vite.config.js                # Vite build configuration
-│   ├── package.json                  # Node.js dependencies and scripts
-│   └── .dockerignore                 # Docker build exclusions
+├─ 🐍 backend/                          Python FastAPI backend service
+│  ├─ app/
+│  │  ├─ 📄 main.py                     FastAPI entry point with CORS middleware
+│  │  ├─ 🗄️  database.py                Database connection & session management
+│  │  ├─ 📊 models.py                   SQLAlchemy ORM (Product, Customer, Order, OrderItem)
+│  │  ├─ ✅ schemas.py                   Pydantic request/response models
+│  │  ├─ ⚙️  crud.py                     CRUD operations with transactions
+│  │  ├─ 🔌 deps.py                     Dependency injection utilities
+│  │  └─ 🛣️  routers/
+│  │     ├─ 📦 products.py              Product management endpoints
+│  │     ├─ 👥 customers.py             Customer management endpoints
+│  │     └─ 📋 orders.py                Order processing & stock management
+│  ├─ 🗂️  alembic/                      Database migration framework
+│  │  ├─ ⚙️  env.py                     Alembic configuration
+│  │  └─ 📜 versions/
+│  │     └─ 🔖 0001_initial.py          Initial schema creation
+│  ├─ 🐳 Dockerfile                    Multi-stage Docker image (Python 3.11-slim)
+│  ├─ 📋 requirements.txt                Python dependencies and versions
+│  └─ 🚫 .dockerignore                  Docker build exclusions
 │
-├── docker-compose.yml                # Multi-service orchestration configuration
-├── .env.example                      # Environment variables template
-├── .gitignore                        # Git exclusions for sensitive and build files
-└── README.md                         # This file
+├─ ⚛️  frontend/                        React + Vite web application
+│  ├─ src/
+│  │  ├─ 📄 main.jsx                   React application entry point
+│  │  ├─ 🎨 App.jsx                     Root component with routing
+│  │  ├─ 🎭 index.css                   Global styles
+│  │  ├─ 🌐 api/
+│  │  │  └─ 📡 axios.js                Axios HTTP client with baseURL
+│  │  ├─ 🧩 components/                 Reusable React components
+│  │  │  ├─ 🧭 Navbar.jsx              Navigation bar with route links
+│  │  │  ├─ 🪟 Modal.jsx                Modal dialog component
+│  │  │  ├─ 🔔 Toast.jsx                Toast notification system
+│  │  │  ├─ ⚠️  ConfirmDialog.jsx       Confirmation dialog
+│  │  │  ├─ 📋 ProductForm.jsx          Product create/edit form
+│  │  │  ├─ 👥 CustomerForm.jsx        Customer create/edit form
+│  │  │  ├─ 🛒 OrderForm.jsx            Order creation form
+│  │  │  └─ 🎨 CSS files                Component-scoped styling
+│  │  ├─ 📄 pages/                     Page-level components
+│  │  │  ├─ 📊 Dashboard.jsx            Summary dashboard with metrics
+│  │  │  ├─ 📦 Products.jsx             Product management interface
+│  │  │  ├─ 👥 Customers.jsx            Customer management interface
+│  │  │  ├─ 📋 Orders.jsx               Order management interface
+│  │  │  └─ 🎨 CSS files                Page-scoped styling
+│  │  └─ 🪝 hooks/
+│  │     └─ 🎣 useFetch.js             Custom hook for API fetching
+│  ├─ 🐳 Dockerfile                    Multi-stage build (Node → Nginx Alpine)
+│  ├─ 🌐 nginx.conf                     Nginx config with SPA routing fallback
+│  ├─ ⚡ vite.config.js                 Vite build tool configuration
+│  ├─ 📦 package.json                   Node.js dependencies and scripts
+│  └─ 🚫 .dockerignore                  Docker build exclusions
+│
+├─ 🐳 docker-compose.yml                Multi-service orchestration config
+├─ 🔐 .env.example                      Environment variables template
+├─ 🚫 .gitignore                        Git exclusions for sensitive files
+└─ 📖 README.md                         This documentation
+
+Legend: 📦=Backend  ⚛️=Frontend  🔧=Config  📊=Data  🌐=Web  🔐=Security
 ```
 
 ### Technology Stack
 
 | Layer | Technology | Version | Purpose |
 |-------|-----------|---------|---------|
-| **Backend** | Python | 3.11 | Core language |
-| | FastAPI | 0.104+ | Web framework with async support |
-| | SQLAlchemy | 2.0+ | ORM for database abstraction |
-| | Alembic | 1.12+ | Database migrations and versioning |
-| | Uvicorn | 0.24+ | ASGI application server |
-| **Frontend** | React | 18.2 | UI library |
-| | Vite | 4.4+ | Build tool and dev server |
-| | React Router | 6.14 | Client-side routing |
-| | Axios | 1.4+ | HTTP client |
-| **Database** | PostgreSQL | 15 | Relational database |
-| **Deployment** | Docker | Latest | Container runtime |
-| | Docker Compose | 3.8+ | Multi-container orchestration |
-| | Nginx | Alpine | Reverse proxy and static file server |
+| **Backend** | Python | 3.11 | 🐍 Core language |
+| | FastAPI | 0.104+ | ⚡ Web framework with async |
+| | SQLAlchemy | 2.0+ | 🗄️ ORM for database abstraction |
+| | Alembic | 1.12+ | 📜 Database migrations & versioning |
+| | Uvicorn | 0.24+ | 🚀 ASGI application server |
+| **Frontend** | React | 18.2 | ⚛️ UI library |
+| | Vite | 4.4+ | ⚡ Build tool & dev server |
+| | React Router | 6.14 | 🧭 Client-side routing |
+| | Axios | 1.4+ | 📡 HTTP client |
+| **Database** | PostgreSQL | 15 | 🗄️ Relational database |
+| **Deployment** | Docker | Latest | 🐳 Container runtime |
+| | Docker Compose | 3.8+ | 🎼 Multi-container orchestration |
+| | Nginx | Alpine | 🔄 Reverse proxy & static server |
 
 
 ## API Specification
