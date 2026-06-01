@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from . import models
 from .database import engine
 from .routers import products, customers
@@ -11,11 +12,15 @@ app = FastAPI(title="Inventory & Order Management")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/")
+def root_redirect():
+    return RedirectResponse(url="/docs")
 
 app.include_router(products.router, prefix="/products", tags=["products"])
 app.include_router(customers.router, prefix="/customers", tags=["customers"])
