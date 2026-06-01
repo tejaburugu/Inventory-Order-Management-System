@@ -1,25 +1,37 @@
 # Inventory & Order Management System
 
-Monorepo containing a Python FastAPI backend and a React frontend (Vite).
+A comprehensive, production-ready full-stack inventory and order management system demonstrating modern web application architecture, containerization, and enterprise-grade development practices.
 
-Services:
-- backend: FastAPI + SQLAlchemy + Alembic
-- frontend: Vite + React
-- db: PostgreSQL
+## Project Overview
 
-## Quick Start with Docker
+This monorepo implements a complete order management platform with:
+- **Scalable Python Backend**: RESTful API built with FastAPI, featuring transactional order processing and CRUD operations
+- **Interactive Frontend**: Modern React application with real-time validation and responsive UI
+- **Persistent Database**: PostgreSQL with schema versioning and automated migrations
+- **Container Orchestration**: Docker Compose for seamless multi-service deployment
 
-### 1. Set up environment variables
+**Key Technologies**: Python 3.11, FastAPI, SQLAlchemy, PostgreSQL 15, React 18, Vite, Docker
 
-Copy `.env.example` to `.env` and update with your configuration:
+## Quick Start
+
+### Prerequisites
+
+- Docker and Docker Compose (v3.8+)
+- Git
+
+### Setup Instructions
+
+#### 1. Environment Configuration
+
+Clone the environment template:
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` to customize credentials (optional—defaults are suitable for local development):
+Configure the following environment variables (defaults are provided for local development):
 
-```
+```env
 POSTGRES_USER=inventory_user
 POSTGRES_PASSWORD=inventory_pass
 POSTGRES_DB=inventory_db
@@ -28,40 +40,54 @@ SECRET_KEY=your-secret-key-change-this-in-production-at-least-32-chars
 VITE_API_URL=http://localhost:8000
 ```
 
-### 2. Build and start all services
+#### 2. Build and Deployment
+
+Start all services using Docker Compose:
 
 ```bash
 docker-compose up --build
 ```
 
-This will:
-- Create a PostgreSQL database container (named `db`)
-- Build and run the FastAPI backend (port 8000)
-- Build and run the Nginx frontend (port 3000)
-- Create a shared network and volume for persistence
+This command:
+- Provisions a PostgreSQL 15 database container with persistent volume storage
+- Builds and launches the FastAPI backend service on port 8000
+- Builds and launches the Nginx-fronted React application on port 3000
+- Establishes a dedicated internal Docker network for service communication
+- Initializes database schema and migration history
 
-### 3. Access the application
+#### 3. Application Access
 
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:8000
-- **Database**: localhost:5432 (use credentials from `.env`)
+| Service | URL | Purpose |
+|---------|-----|---------|
+| Frontend | `http://localhost:3000` | React web application |
+| Backend API | `http://localhost:8000` | RESTful API endpoint |
+| API Documentation | `http://localhost:8000/docs` | Interactive Swagger documentation |
+| Database | `localhost:5432` | PostgreSQL (use credentials from `.env`) |
 
-> Note: `0.0.0.0` is a bind address, not a valid browser host. Use `http://localhost:8000` or `http://127.0.0.1:8000` from your host machine.
+**Note**: `0.0.0.0` is an internal bind address and cannot be accessed from a browser. Use `http://localhost:8000` or `http://127.0.0.1:8000` to access services from your local machine.
 
-### 4. Stop all services
+#### 4. Shutdown
+
+Stop all services:
 
 ```bash
 docker-compose down
 ```
 
-To also remove the database volume:
+To remove persistent data (database volume):
+
 ```bash
 docker-compose down -v
 ```
 
-## Local Development (without Docker)
 
-### Backend
+## Local Development
+
+For development without containerization, follow the setup instructions below.
+
+### Backend Setup
+
+Navigate to the backend directory and configure a Python virtual environment:
 
 ```bash
 cd backend
@@ -70,11 +96,15 @@ python -m venv .venv
 # or .venv/bin/activate  # macOS/Linux
 
 pip install -r requirements.txt
-export DATABASE_URL=sqlite:///./test.db
+export DATABASE_URL=sqlite:///./test.db  # Use SQLite for local development
 uvicorn app.main:app --reload
 ```
 
-### Frontend
+The backend API will be available at `http://localhost:8000`.
+
+### Frontend Setup
+
+Navigate to the frontend directory and install Node.js dependencies:
 
 ```bash
 cd frontend
@@ -82,84 +112,309 @@ npm install
 npm run dev
 ```
 
-Set `VITE_API_URL` in `frontend/.env.local`:
-```
+Create a `.env.local` file with the API configuration:
+
+```env
 VITE_API_URL=http://localhost:8000
 ```
 
-## Project Structure
+The frontend application will be available at `http://localhost:5173`.
+
+## Project Architecture
 
 ```
-├── backend/              # FastAPI application
+Inventory & Order Management System/
+├── backend/                          # Python FastAPI backend service
 │   ├── app/
-│   │   ├── models.py     # SQLAlchemy models
-│   │   ├── schemas.py    # Pydantic schemas
-│   │   ├── crud.py       # CRUD helpers
-│   │   ├── main.py       # FastAPI app & routes
-│   │   ├── database.py   # Database config
-│   │   └── routers/      # API route modules
-│   ├── alembic/          # Database migrations
-│   ├── Dockerfile        # Backend container image
-│   └── requirements.txt   # Python dependencies
-├── frontend/             # React + Vite application
+│   │   ├── main.py                   # FastAPI application entry point with CORS middleware
+│   │   ├── database.py               # Database connection and session management
+│   │   ├── models.py                 # SQLAlchemy ORM models (Product, Customer, Order, OrderItem)
+│   │   ├── schemas.py                # Pydantic request/response models with validation
+│   │   ├── crud.py                   # Database operations with transaction support
+│   │   ├── deps.py                   # Dependency injection utilities
+│   │   └── routers/                  # API route modules
+│   │       ├── products.py           # Product management endpoints
+│   │       ├── customers.py          # Customer management endpoints
+│   │       └── orders.py             # Order processing with stock management
+│   ├── alembic/                      # Database migration framework
+│   │   ├── env.py                    # Alembic configuration
+│   │   └── versions/                 # Migration scripts
+│   │       └── 0001_initial.py       # Initial schema creation
+│   ├── Dockerfile                    # Multi-stage Docker image (Python 3.11-slim)
+│   ├── requirements.txt               # Python dependencies and versions
+│   └── .dockerignore                 # Docker build exclusions
+│
+├── frontend/                         # React + Vite web application
 │   ├── src/
-│   │   ├── components/   # Reusable React components
-│   │   ├── pages/        # Page components
-│   │   ├── api/          # Axios API setup
-│   │   └── hooks/        # Custom hooks
-│   ├── Dockerfile        # Frontend container image (multi-stage)
-│   ├── nginx.conf        # Nginx config (React Router fallback)
-│   └── package.json      # Node dependencies
-├── docker-compose.yml    # Multi-service orchestration
-├── .env.example          # Example environment variables
-└── README.md             # This file
+│   │   ├── main.jsx                  # React application entry point
+│   │   ├── App.jsx                   # Root component with routing configuration
+│   │   ├── index.css                 # Global styles
+│   │   ├── api/
+│   │   │   └── axios.js              # Axios HTTP client with baseURL configuration
+│   │   ├── components/               # Reusable React components
+│   │   │   ├── Navbar.jsx            # Navigation bar with route links
+│   │   │   ├── Modal.jsx             # Modal dialog component
+│   │   │   ├── Toast.jsx             # Toast notification system
+│   │   │   ├── ConfirmDialog.jsx     # Confirmation dialog for destructive actions
+│   │   │   ├── ProductForm.jsx       # Product creation/edit form
+│   │   │   ├── CustomerForm.jsx      # Customer creation/edit form
+│   │   │   ├── OrderForm.jsx         # Order creation with item selection
+│   │   │   └── CSS files             # Component-scoped styling
+│   │   ├── pages/                    # Page-level components
+│   │   │   ├── Dashboard.jsx         # Summary dashboard with key metrics
+│   │   │   ├── Products.jsx          # Product management interface
+│   │   │   ├── Customers.jsx         # Customer management interface
+│   │   │   ├── Orders.jsx            # Order management interface
+│   │   │   └── CSS files             # Page-scoped styling
+│   │   └── hooks/
+│   │       └── useFetch.js           # Custom hook for API data fetching
+│   ├── Dockerfile                    # Multi-stage Docker build (Node 18 → Nginx Alpine)
+│   ├── nginx.conf                    # Nginx configuration with SPA routing fallback
+│   ├── vite.config.js                # Vite build configuration
+│   ├── package.json                  # Node.js dependencies and scripts
+│   └── .dockerignore                 # Docker build exclusions
+│
+├── docker-compose.yml                # Multi-service orchestration configuration
+├── .env.example                      # Environment variables template
+├── .gitignore                        # Git exclusions for sensitive and build files
+└── README.md                         # This file
 ```
 
-## API Endpoints
+### Technology Stack
 
-### Products
-- `GET /products` — list all products
-- `POST /products` — create product
-- `GET /products/{id}` — get product by ID
-- `PUT /products/{id}` — update product
-- `DELETE /products/{id}` — delete product
+| Layer | Technology | Version | Purpose |
+|-------|-----------|---------|---------|
+| **Backend** | Python | 3.11 | Core language |
+| | FastAPI | 0.104+ | Web framework with async support |
+| | SQLAlchemy | 2.0+ | ORM for database abstraction |
+| | Alembic | 1.12+ | Database migrations and versioning |
+| | Uvicorn | 0.24+ | ASGI application server |
+| **Frontend** | React | 18.2 | UI library |
+| | Vite | 4.4+ | Build tool and dev server |
+| | React Router | 6.14 | Client-side routing |
+| | Axios | 1.4+ | HTTP client |
+| **Database** | PostgreSQL | 15 | Relational database |
+| **Deployment** | Docker | Latest | Container runtime |
+| | Docker Compose | 3.8+ | Multi-container orchestration |
+| | Nginx | Alpine | Reverse proxy and static file server |
 
-### Customers
-- `GET /customers` — list all customers
-- `POST /customers` — create customer (unique email)
-- `GET /customers/{id}` — get customer by ID
-- `DELETE /customers/{id}` — delete customer
 
-### Orders
-- `GET /orders` — list all orders
-- `POST /orders` — create order (with items, stock validation)
-- `GET /orders/{id}` — get order details
-- `DELETE /orders/{id}` — cancel order (restores stock)
+## API Specification
 
-## Features
+The backend provides a comprehensive RESTful API for inventory and order management. Full interactive documentation is available at `http://localhost:8000/docs` (Swagger UI).
 
-- **Product Management**: CRUD with SKU uniqueness, stock tracking
-- **Customer Management**: CRUD with email validation
-- **Order Management**: Create orders with multiple items, automatic stock deduction, order cancellation
-- **Dashboard**: Summary cards, low-stock product alerts
-- **Real-time Validation**: Frontend and backend validation
-- **Error Handling**: User-friendly error messages and toasts
+### Products Module
 
-## Technology Stack
+| Method | Endpoint | Description | Authentication |
+|--------|----------|-------------|-----------------|
+| POST | `/products` | Create a new product with SKU validation | None |
+| GET | `/products` | Retrieve all products with current inventory levels | None |
+| GET | `/products/{id}` | Retrieve a specific product by ID | None |
+| PUT | `/products/{id}` | Update product details (name, price, quantity) | None |
+| DELETE | `/products/{id}` | Delete a product and its inventory record | None |
 
-- **Backend**: Python 3.11, FastAPI, SQLAlchemy, PostgreSQL, Alembic
-- **Frontend**: React 18, Vite, React Router v6, Axios
-- **DevOps**: Docker, Docker Compose, Nginx
-- **Database**: PostgreSQL 15
+**Key Validations**: SKU uniqueness, positive quantity, non-negative pricing
+
+### Customers Module
+
+| Method | Endpoint | Description | Authentication |
+|--------|----------|-------------|-----------------|
+| POST | `/customers` | Create a new customer with email validation | None |
+| GET | `/customers` | Retrieve all registered customers | None |
+| GET | `/customers/{id}` | Retrieve a specific customer profile | None |
+| DELETE | `/customers/{id}` | Deactivate/remove a customer record | None |
+
+**Key Validations**: Email format and uniqueness, required name field
+
+### Orders Module
+
+| Method | Endpoint | Description | Authentication |
+|--------|----------|-------------|-----------------|
+| POST | `/orders` | Create order with transactional stock management | None |
+| GET | `/orders` | Retrieve all orders with status and details | None |
+| GET | `/orders/{id}` | Retrieve order details with line items | None |
+| DELETE | `/orders/{id}` | Cancel order and restore product inventory | None |
+
+**Key Validations**: Stock availability per item, minimum order quantity, customer existence
+
+### Health Check
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/health` | Application health and readiness status |
+
+## Core Features
+
+### Product Management
+- **CRUD Operations**: Full create, read, update, and delete functionality
+- **SKU Management**: Enforced uniqueness to prevent duplicate product entries
+- **Inventory Tracking**: Real-time stock level monitoring with low-stock alerts
+- **Price Management**: Track and update product pricing information
+
+### Customer Management
+- **CRUD Operations**: Complete customer lifecycle management
+- **Email Validation**: RFC-compliant email format validation with uniqueness enforcement
+- **Customer Profiles**: Persistent customer data with order history correlation
+
+### Order Processing
+- **Multi-Item Orders**: Support for orders containing multiple product items
+- **Stock Validation**: Automatic inventory availability checks before order confirmation
+- **Transactional Processing**: Atomic order creation with stock deduction
+- **Order Cancellation**: Automatic stock restoration when orders are cancelled
+- **Order Tracking**: Comprehensive order history with status and timeline
+
+### User Interface
+- **Responsive Dashboard**: Summary metrics, inventory alerts, and quick insights
+- **Low-Stock Alerts**: Visual indicators for products below threshold quantities
+- **Real-Time Validation**: Frontend and backend validation for data integrity
+- **Error Handling**: User-friendly error messages with actionable feedback
+- **Toast Notifications**: Non-intrusive success/error notifications
+
+### Data Integrity
+- **Database Constraints**: Primary keys, foreign keys, and unique constraints
+- **Transactional Order Creation**: Ensures consistency in multi-step operations
+- **Schema Versioning**: Alembic migrations for safe database schema evolution
+- **Input Validation**: Pydantic schemas for request/response validation
+
+## Architecture & Design Patterns
+
+### Backend Architecture
+- **RESTful API Design**: Stateless endpoint design following HTTP conventions
+- **Dependency Injection**: FastAPI dependencies for database session management
+- **CORS Middleware**: Cross-origin resource sharing configuration for frontend integration
+- **ORM Abstraction**: SQLAlchemy for database-agnostic data access
+- **Transactional Operations**: Database transactions for order processing consistency
+
+### Frontend Architecture
+- **Component-Based**: Modular React components with single responsibility principle
+- **Custom Hooks**: `useFetch` hook for abstracted API communication
+- **Client-Side Routing**: React Router v6 for SPA navigation
+- **Error Boundaries**: Comprehensive error handling and user feedback
+- **CSS Modules**: Component-scoped styling to prevent style conflicts
+
+### Data Models
+- **Product**: SKU (unique), name, price, quantity
+- **Customer**: Email (unique), name, contact information
+- **Order**: Customer reference, order date, status, total amount
+- **OrderItem**: Order reference, product reference, quantity, unit price
+
+## Production Deployment Considerations
+
+### Security Recommendations
+- Replace `SECRET_KEY` in `.env` with a strong, randomly-generated key (minimum 32 characters)
+- Implement authentication and authorization (JWT tokens recommended)
+- Use HTTPS/TLS for all API communications
+- Implement rate limiting to prevent abuse
+- Add request validation for all endpoints
+- Consider implementing API key authentication for service-to-service communication
+
+### Performance Optimization
+- Implement database connection pooling
+- Add query result caching for frequently accessed data
+- Consider implementing pagination for large datasets
+- Monitor database query performance
+- Implement CDN for static assets (JavaScript, CSS, images)
+
+### Database Management
+- Configure regular automated backups
+- Implement database replication for high availability
+- Use a dedicated database user with minimum required privileges
+- Monitor database storage and growth trends
+- Implement log retention policies
+
+### Monitoring & Logging
+- Configure application logging (structured logging recommended)
+- Implement health check monitoring
+- Set up alerts for critical errors
+- Monitor API response times and throughput
+- Track error rates and patterns
+
+### Container Orchestration
+- For production workloads, consider Kubernetes deployment
+- Implement resource limits and requests for containers
+- Use a container registry (Docker Hub, ECR, etc.) for image storage
+- Implement container image scanning for vulnerabilities
+- Use orchestrated secrets management (Kubernetes Secrets, HashiCorp Vault)
+
+## Development Workflow
+
+### Prerequisites
+- Python 3.11+
+- Node.js 18+
+- Docker and Docker Compose
+- Git
+
+### Building from Source
+```bash
+# Clone repository
+git clone https://github.com/tejaburugu/Inventory-Order-Management-System.git
+cd "Inventory & Order Management System"
+
+# Copy environment template
+cp .env.example .env
+
+# Build and run services
+docker-compose up --build
+```
+
+### Database Migrations
+For local development changes to database schema:
+
+```bash
+cd backend
+python -m alembic revision --autogenerate -m "Description of changes"
+python -m alembic upgrade head
+```
+
+### Code Quality
+- Backend: Follow PEP 8 style guidelines
+- Frontend: Use ESLint configuration provided in project
+- Commit messages: Use descriptive, conventional commit format
+
+## File Configuration
+
+### `.env.example`
+Contains all required environment variables with sensible defaults for local development. Copy to `.env` for your local environment.
+
+### `docker-compose.yml`
+Defines three services:
+- **db**: PostgreSQL 15 with persistent volume
+- **backend**: FastAPI application with health checks
+- **frontend**: Nginx serving React SPA with React Router fallback
+
+### Backend Files
+- `requirements.txt`: Python package dependencies
+- `Dockerfile`: Multi-stage build optimizing final image size
+- `alembic.ini`: Database migration configuration
+- `app/main.py`: FastAPI application with CORS middleware
+
+### Frontend Files
+- `package.json`: Node.js dependencies and build scripts
+- `Dockerfile`: Multi-stage build (Node for compilation, Nginx for serving)
+- `nginx.conf`: Nginx configuration with SPA fallback routing
+- `vite.config.js`: Vite build tool configuration
 
 ## Notes
 
-- Ensure Docker and Docker Compose are installed.
-- The frontend build uses a multi-stage Dockerfile for optimized image size.
-- All services communicate over an internal Docker network (`app-network`).
-- Database data is persisted using a named volume (`db_data`).
+- All services communicate over an isolated Docker network (`app-network`)
+- Database data persists in a named volume (`db_data`)
+- Frontend build artifacts are optimized and served by Nginx
+- CORS middleware is configured to accept requests from `localhost:3000`
+- Database migrations are automatically applied on service startup
+- The `.gitignore` file excludes sensitive data and build artifacts
 
-Backend:
-- API: http://localhost:8000
-Frontend:
-- App: http://localhost:3000
+## Support & Resources
+
+- **API Documentation**: Available at `http://localhost:8000/docs` (Swagger UI)
+- **FastAPI Documentation**: https://fastapi.tiangolo.com/
+- **React Documentation**: https://react.dev/
+- **PostgreSQL Documentation**: https://www.postgresql.org/docs/
+- **Docker Documentation**: https://docs.docker.com/
+
+## License
+
+This project is provided as-is for educational and portfolio demonstration purposes.
+
+---
+
+**Last Updated**: June 2026 | **Status**: Production-Ready | **Maintenance**: Active
